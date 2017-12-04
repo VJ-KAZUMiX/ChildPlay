@@ -151,6 +151,7 @@ GameObject:
   m_Component:
   - component: {fileID: 193061107}
   - component: {fileID: 193061108}
+  - component: {fileID: 193061109}
   m_Layer: 0
   m_Name: BallContainer
   m_TagString: Untagged
@@ -184,6 +185,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 1661388422743302, guid: 7224264f695e9814d9c6425310172a76, type: 2}
+--- !u!114 &193061109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 193061106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1deb3a725ca488458dea2bf8cf504a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ballFactory: {fileID: 193061108}
 --- !u!1 &260982068
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,7 +314,12 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4256412881647738, guid: 7224264f695e9814d9c6425310172a76, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 50782512042530274, guid: 7224264f695e9814d9c6425310172a76,
+        type: 2}
+      propertyPath: m_Mass
+      value: 0.7853982
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7224264f695e9814d9c6425310172a76, type: 2}

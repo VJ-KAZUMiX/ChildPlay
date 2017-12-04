@@ -12,7 +12,7 @@ public class BallFactory : MonoBehaviour
         GameObject go = Instantiate (ballPrefab) as GameObject;
         go.transform.SetParent (transform);
         Ball ball = go.GetComponent<Ball> ();
-        ball.Init (radius);
+        ball.Init (radius / 2, radius, 0.2f);
         return ball;
     }
 
