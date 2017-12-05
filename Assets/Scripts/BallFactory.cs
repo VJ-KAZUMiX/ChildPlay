@@ -18,10 +18,10 @@ public class BallFactory : MonoBehaviour
 
     private void Update ()
     {
-        test ();
+        //Test ();
     }
 
-    private void test ()
+    private void Test ()
     {
         if (Input.GetMouseButtonDown (0)) {
             Vector3 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);

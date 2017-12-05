@@ -1,12 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// ボール的なもの。直径を x, y のスケールとする。
 /// </summary>
 public class Ball : MonoBehaviour
 {
+    /// <summary>
+    /// タッチダウンデリゲート
+    /// </summary>
+    public UnityAction<Ball> OnPointerDownHandler;
+
     /// <summary>
     /// 半径
     /// </summary>
@@ -116,6 +122,16 @@ public class Ball : MonoBehaviour
     }
 
     /// <summary>
+    /// 指定半径に変化
+    /// </summary>
+    /// <param name="targetRadius"></param>
+    /// <param name="animationTime"></param>
+    public void ChangeRadius(float targetRadius, float animationTime)
+    {
+        Init (CurrentRadius, targetRadius, animationTime);
+    }
+
+    /// <summary>
     /// Unity FixedUpdate
     /// </summary>
     private void FixedUpdate ()
@@ -138,5 +154,15 @@ public class Ball : MonoBehaviour
     private float ease (float currentTime, float startValue, float changeInValue, float duration)
     {
         return changeInValue * (-Mathf.Pow (2, -10 * currentTime / duration) + 1) + startValue;
+    }
+
+    /// <summary>
+    /// タッチダウン
+    /// </summary>
+    public void OnPointerDown ()
+    {
+        if (OnPointerDownHandler != null) {
+            OnPointerDownHandler.Invoke (this);
+        }
     }
 }
