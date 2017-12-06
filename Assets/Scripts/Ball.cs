@@ -14,6 +14,11 @@ public class Ball : MonoBehaviour
     public UnityAction<Ball> OnPointerDownHandler;
 
     /// <summary>
+    /// 衝突してるボール
+    /// </summary>
+    public Ball CollisionBall { get; private set; }
+
+    /// <summary>
     /// 半径
     /// </summary>
     private float _radius;
@@ -100,7 +105,7 @@ public class Ball : MonoBehaviour
     /// 指定半径で初期化
     /// </summary>
     /// <param name="initialRadius"></param>
-    public void Init(float initialRadius)
+    public void Init (float initialRadius)
     {
         CurrentRadius = Radius = initialRadius;
     }
@@ -110,7 +115,7 @@ public class Ball : MonoBehaviour
     /// </summary>
     /// <param name="initialRadius"></param>
     /// <param name="targetRadius"></param>
-    public void Init(float initialRadius, float targetRadius, float animationTime)
+    public void Init (float initialRadius, float targetRadius, float animationTime)
     {
         CurrentRadius = initialRadius;
         Radius = targetRadius;
@@ -126,7 +131,7 @@ public class Ball : MonoBehaviour
     /// </summary>
     /// <param name="targetRadius"></param>
     /// <param name="animationTime"></param>
-    public void ChangeRadius(float targetRadius, float animationTime)
+    public void ChangeRadius (float targetRadius, float animationTime)
     {
         Init (CurrentRadius, targetRadius, animationTime);
     }
@@ -148,12 +153,40 @@ public class Ball : MonoBehaviour
             return;
         }
 
-        CurrentRadius = ease (animationProgressTime, animationStartRadiusValue, animationChangeInRadiusValue, animationDuration);
+        CurrentRadius = Ease (animationProgressTime, animationStartRadiusValue, animationChangeInRadiusValue, animationDuration);
     }
 
-    private float ease (float currentTime, float startValue, float changeInValue, float duration)
+    /// <summary>
+    /// イージング
+    /// </summary>
+    /// <param name="currentTime"></param>
+    /// <param name="startValue"></param>
+    /// <param name="changeInValue"></param>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    private float Ease (float currentTime, float startValue, float changeInValue, float duration)
     {
-        return changeInValue * (-Mathf.Pow (2, -10 * currentTime / duration) + 1) + startValue;
+        //return changeInValue * (-Mathf.Pow (2, -10 * currentTime / duration) + 1) + startValue;
+        return EaseOutElastic (currentTime / duration) * changeInValue + startValue;
+    }
+
+    /// <summary>
+    /// EaseOutElastic
+    /// </summary>
+    /// <param name="progress"></param>
+    /// <returns></returns>
+    private float EaseOutElastic (float progress)
+    {
+        if (progress == 0) {
+            return 0.0f;
+        }
+        if (progress == 1) {
+            return 1.0f;
+        }
+        float p = 0.3f;
+        float a = 1.0f;
+        float s = p / (2 * Mathf.PI);
+        return a * Mathf.Pow (2, -10 * progress) * Mathf.Sin ((progress * 1 - s) * (2 * Mathf.PI) / p) + 1;
     }
 
     /// <summary>
@@ -164,5 +197,20 @@ public class Ball : MonoBehaviour
         if (OnPointerDownHandler != null) {
             OnPointerDownHandler.Invoke (this);
         }
+    }
+
+    /// <summary>
+    /// 衝突
+    /// </summary>
+    /// <param name="collision"></param>
+    private void OnCollisionEnter2D (Collision2D collision)
+    {
+        // ボール以外は無視
+        if (collision.gameObject.tag != "Ball") {
+            return;
+        }
+
+        // 保存
+        CollisionBall = collision.gameObject.GetComponent<Ball> ();
     }
 }
