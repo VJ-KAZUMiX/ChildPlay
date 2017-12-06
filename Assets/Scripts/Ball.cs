@@ -8,6 +8,15 @@ using UnityEngine.Events;
 /// </summary>
 public class Ball : MonoBehaviour
 {
+    public enum BallState
+    {
+        Idle = 0,
+        Changing,
+        Vanishing
+    }
+
+    public BallState CurrentBallState { get; private set; }
+
     /// <summary>
     /// タッチダウンデリゲート
     /// </summary>
@@ -108,6 +117,7 @@ public class Ball : MonoBehaviour
     public void Init (float initialRadius)
     {
         CurrentRadius = Radius = initialRadius;
+        CurrentBallState = BallState.Changing;
     }
 
     /// <summary>
@@ -124,6 +134,8 @@ public class Ball : MonoBehaviour
         animationProgressTime = 0;
         animationStartRadiusValue = initialRadius;
         animationChangeInRadiusValue = targetRadius - initialRadius;
+
+        CurrentBallState = BallState.Changing;
     }
 
     /// <summary>
@@ -137,11 +149,22 @@ public class Ball : MonoBehaviour
     }
 
     /// <summary>
+    /// 消去
+    /// </summary>
+    public void Vanish ()
+    {
+        CurrentBallState = BallState.Vanishing;
+        // TODO: キャッシュ
+        Destroy (gameObject);
+    }
+
+    /// <summary>
     /// Unity FixedUpdate
     /// </summary>
     private void FixedUpdate ()
     {
         if (Radius == CurrentRadius) {
+            CurrentBallState = BallState.Idle;
             return;
         }
 
