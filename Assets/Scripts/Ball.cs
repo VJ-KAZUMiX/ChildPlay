@@ -23,6 +23,11 @@ public class Ball : MonoBehaviour
     public UnityAction<Ball> OnPointerDownHandler;
 
     /// <summary>
+    /// 解放デリゲート
+    /// </summary>
+    public UnityAction<Ball> OnReleaseHandler;
+
+    /// <summary>
     /// 衝突してるボール
     /// </summary>
     public Ball CollisionBall { get; private set; }
@@ -111,16 +116,6 @@ public class Ball : MonoBehaviour
     private float animationChangeInRadiusValue;
 
     /// <summary>
-    /// 指定半径で初期化
-    /// </summary>
-    /// <param name="initialRadius"></param>
-    public void Init (float initialRadius)
-    {
-        CurrentRadius = Radius = initialRadius;
-        CurrentBallState = BallState.Changing;
-    }
-
-    /// <summary>
     /// 初期半径と最終半径で初期化
     /// </summary>
     /// <param name="initialRadius"></param>
@@ -154,8 +149,11 @@ public class Ball : MonoBehaviour
     public void Vanish ()
     {
         CurrentBallState = BallState.Vanishing;
-        // TODO: キャッシュ
-        Destroy (gameObject);
+
+        // 解放
+        if (OnReleaseHandler != null) {
+            OnReleaseHandler.Invoke (this);
+        }
     }
 
     /// <summary>
@@ -233,7 +231,7 @@ public class Ball : MonoBehaviour
             return;
         }
 
-        // 保存
+        // 1個だけ保存
         CollisionBall = collision.gameObject.GetComponent<Ball> ();
     }
 }

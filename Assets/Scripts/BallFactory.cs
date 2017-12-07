@@ -7,13 +7,38 @@ public class BallFactory : MonoBehaviour
     [SerializeField]
     private GameObject ballPrefab;
 
-    public Ball Create (float radius)
+    /// <summary>
+    /// 再利用待ちボールリスト
+    /// </summary>
+    private List<Ball> cachedBallList = new List<Ball> () { Capacity = 16 };
+
+    public Ball Create ()
     {
-        GameObject go = Instantiate (ballPrefab) as GameObject;
-        go.transform.SetParent (transform);
-        Ball ball = go.GetComponent<Ball> ();
-        ball.Init (radius / 2, radius, 0.7f);
+        Ball ball;
+        if (cachedBallList.Count > 0) {
+            // キャッシュにある
+            ball = cachedBallList[cachedBallList.Count - 1];
+            cachedBallList.RemoveAt(cachedBallList.Count - 1);
+            ball.gameObject.SetActive (true);
+        } else {
+            // ない
+            GameObject go = Instantiate (ballPrefab) as GameObject;
+            go.transform.SetParent (transform);
+            ball = go.GetComponent<Ball> ();
+            ball.OnReleaseHandler += OnReleaseBall;
+        }
         return ball;
+    }
+
+    /// <summary>
+    /// ボール解放ハンドラ
+    /// </summary>
+    /// <param name="ball"></param>
+    private void OnReleaseBall (Ball ball)
+    {
+        // キャッシュに入れとく
+        cachedBallList.Add (ball);
+        ball.gameObject.SetActive (false);
     }
 
     private void Update ()
@@ -26,7 +51,8 @@ public class BallFactory : MonoBehaviour
         if (Input.GetMouseButtonDown (0)) {
             Vector3 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
             pos.z = 0;
-            Ball ball = Create (Random.Range (0.5f, 1.5f));
+            Ball ball = Create ();
+            ball.Init (1.0f, Random.Range (0.5f, 1.5f), 0.7f);
             ball.transform.position = pos;
         }
     }

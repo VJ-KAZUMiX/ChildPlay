@@ -15,13 +15,14 @@ public class BallManager : MonoBehaviour
     /// </summary>
     private void Start ()
     {
-        Ball ball = RetainBall (2);
+        Ball ball = CreateBall (2);
         ball.transform.localPosition = Vector3.zero;
     }
 
-    private Ball RetainBall(float radius)
+    private Ball CreateBall(float radius)
     {
-        Ball ball = ballFactory.Create (radius);
+        Ball ball = ballFactory.Create ();
+        ball.Init (radius / 2, radius, 0.7f);
         activeBallList.Add (ball);
         ball.OnPointerDownHandler += SplitBall;
         return ball;
@@ -33,7 +34,7 @@ public class BallManager : MonoBehaviour
         float newRadius = Mathf.Sqrt (newArea / Mathf.PI);
         ball.ChangeRadius (newRadius, 1);
 
-        Ball newBall = RetainBall (newRadius);
+        Ball newBall = CreateBall (newRadius);
         Vector3 pos = ball.transform.position;
         Vector2 randomPos = Random.insideUnitCircle * newRadius;
         pos.x += randomPos.x;
@@ -60,12 +61,14 @@ public class BallManager : MonoBehaviour
             float newRadius = Mathf.Sqrt (newArea / Mathf.PI);
             ball.ChangeRadius (newRadius, 1);
             ball.CollisionBall.Vanish ();
+            ball.CollisionBall.OnPointerDownHandler -= SplitBall; // 削除
             vanishingBallList.Add (ball.CollisionBall);
         }
 
         for (int i = 0, len = vanishingBallList.Count; i < len; i++) {
             activeBallList.Remove (vanishingBallList[i]);
         }
+        vanishingBallList.Clear ();
     }
 
     /// <summary>
