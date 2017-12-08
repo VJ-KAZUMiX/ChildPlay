@@ -12,6 +12,8 @@ public class BallFactory : MonoBehaviour
     /// </summary>
     private List<Ball> cachedBallList = new List<Ball> () { Capacity = 16 };
 
+    private int counter = 0;
+
     public Ball Create ()
     {
         Ball ball;
@@ -26,6 +28,8 @@ public class BallFactory : MonoBehaviour
             go.transform.SetParent (transform);
             ball = go.GetComponent<Ball> ();
             ball.OnReleaseHandler += OnReleaseBall;
+            go.name = "Ball_" + counter.ToString ();
+            counter++;
         }
         return ball;
     }

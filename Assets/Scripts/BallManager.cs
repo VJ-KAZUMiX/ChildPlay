@@ -40,6 +40,11 @@ public class BallManager : MonoBehaviour
         pos.x += randomPos.x;
         pos.y += randomPos.y;
         newBall.transform.position = pos;
+
+        // 50％の確率でもう一回呼ぶ
+        if (Random.Range(0, 2) == 0) {
+            SplitBall (ball);
+        }
     }
 
     /// <summary>
@@ -47,6 +52,7 @@ public class BallManager : MonoBehaviour
     /// </summary>
     private void FixedUpdate ()
     {
+        // 大きい順に処理
         activeBallList.Sort (CompareByArea);
 
         for (int i = 0, len = activeBallList.Count; i < len; i++) {
@@ -57,12 +63,22 @@ public class BallManager : MonoBehaviour
             if (ball.CollisionBall == null || ball.CollisionBall.CurrentBallState != Ball.BallState.Idle) {
                 continue;
             }
-            float newArea = ball.Area + ball.CollisionBall.Area;
+            // 融合開始
+            Ball collisionBall = ball.CollisionBall;
+            float newArea = ball.Area + collisionBall.Area;
             float newRadius = Mathf.Sqrt (newArea / Mathf.PI);
             ball.ChangeRadius (newRadius, 1);
-            ball.CollisionBall.Vanish ();
-            ball.CollisionBall.OnPointerDownHandler -= SplitBall; // 削除
-            vanishingBallList.Add (ball.CollisionBall);
+
+            // 取り込むボールの方向へ引かれる感じ
+            // いまいち
+            //float angle = Mathf.Atan2 (collisionBall.transform.position.y - transform.position.y, collisionBall.transform.position.x - transform.position.x);
+            //Vector2 direction = new Vector2 (Mathf.Cos (angle), Mathf.Sign (angle));
+            //ball.AddForce (direction * 10);
+
+            // 取り込んだボールは消えてもらう
+            collisionBall.OnPointerDownHandler -= SplitBall;
+            collisionBall.Vanish ();
+            vanishingBallList.Add (collisionBall);
         }
 
         for (int i = 0, len = vanishingBallList.Count; i < len; i++) {

@@ -8,6 +8,9 @@ using UnityEngine.Events;
 /// </summary>
 public class Ball : MonoBehaviour
 {
+    [SerializeField]
+    private Rigidbody2D rb;
+
     public enum BallState
     {
         Idle = 0,
@@ -28,9 +31,24 @@ public class Ball : MonoBehaviour
     public UnityAction<Ball> OnReleaseHandler;
 
     /// <summary>
-    /// 衝突してるボール
+    /// 衝突中ボールリスト
     /// </summary>
-    public Ball CollisionBall { get; private set; }
+    private List<Ball> collisionBallList = new List<Ball> () { Capacity = 8 };
+
+    /// <summary>
+    /// 衝突してるボールを一つ返す
+    /// </summary>
+    public Ball CollisionBall
+    {
+        get
+        {
+            if (collisionBallList.Count > 0) {
+                return collisionBallList[0];
+            } else {
+                return null;
+            }
+        }
+    }
 
     /// <summary>
     /// 半径
@@ -221,7 +239,7 @@ public class Ball : MonoBehaviour
     }
 
     /// <summary>
-    /// 衝突
+    /// Unity OnCollisionEnter2D
     /// </summary>
     /// <param name="collision"></param>
     private void OnCollisionEnter2D (Collision2D collision)
@@ -231,7 +249,47 @@ public class Ball : MonoBehaviour
             return;
         }
 
-        // 1個だけ保存
-        CollisionBall = collision.gameObject.GetComponent<Ball> ();
+        Ball ball = collision.gameObject.GetComponent<Ball> ();
+        if (collisionBallList.Contains (ball)) {
+            return;
+        }
+        collisionBallList.Add (ball);
+    }
+
+    /// <summary>
+    /// Unity OnCollisionExit2D
+    /// </summary>
+    /// <param name="collision"></param>
+    private void OnCollisionExit2D (Collision2D collision)
+    {
+        // ボール以外は無視
+        if (collision.gameObject.tag != "Ball") {
+            return;
+        }
+
+        Ball ball = collision.gameObject.GetComponent<Ball> ();
+        if (collisionBallList.Contains (ball)) {
+            collisionBallList.Remove (ball);
+        } else {
+            Debug.LogError ("衝突リストから除外すべき Ball が無い");
+        }
+    }
+
+    /// <summary>
+    /// Unity OnBecameInvisible
+    /// </summary>
+    private void OnBecameInvisible ()
+    {
+        // 画面外に行ったら戻る
+        Vector3 pos = transform.position;
+        pos.x = 0;
+        pos.y = 0;
+        transform.position = pos;
+        rb.velocity = Vector2.zero;
+    }
+
+    public void AddForce (Vector2 force)
+    {
+        rb.AddForce (force, ForceMode2D.Impulse);
     }
 }
