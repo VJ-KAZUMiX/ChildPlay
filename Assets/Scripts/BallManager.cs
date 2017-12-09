@@ -30,6 +30,8 @@ public class BallManager : MonoBehaviour
 
     private void SplitBall(Ball ball)
     {
+        SoundBlaster.Instance.Play (SoundBlaster.SoundType.Split);
+
         float newArea = ball.Area / 2.0f;
         float newRadius = Mathf.Sqrt (newArea / Mathf.PI);
         ball.ChangeRadius (newRadius, 1);
@@ -64,6 +66,7 @@ public class BallManager : MonoBehaviour
                 continue;
             }
             // 融合開始
+            SoundBlaster.Instance.Play (SoundBlaster.SoundType.Merge);
             Ball collisionBall = ball.CollisionBall;
             float newArea = ball.Area + collisionBall.Area;
             float newRadius = Mathf.Sqrt (newArea / Mathf.PI);

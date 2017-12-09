@@ -246,6 +246,7 @@ public class Ball : MonoBehaviour
     {
         // ボール以外は無視
         if (collision.gameObject.tag != "Ball") {
+            SoundBlaster.Instance.Play (SoundBlaster.SoundType.Bound);
             return;
         }
 
