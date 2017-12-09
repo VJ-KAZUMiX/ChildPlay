@@ -11,6 +11,14 @@ public class BallManager : MonoBehaviour
     private List<Ball> vanishingBallList = new List<Ball> () { Capacity = 16 };
 
     /// <summary>
+    /// Unity Awake
+    /// </summary>
+    private void Awake ()
+    {
+        Application.targetFrameRate = -1;
+    }
+
+    /// <summary>
     /// Unity Start
     /// </summary>
     private void Start ()
